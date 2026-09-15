@@ -33,7 +33,6 @@
     overflow-x: hidden;
   }
 
-  /* ===== LOADER ===== */
   #loader {
     position: fixed; inset: 0; background: var(--bg); z-index: 999;
     display: flex; align-items: center; justify-content: center;
@@ -56,25 +55,22 @@
   @keyframes fadeWord { to { opacity: 1; } }
   @keyframes fillBar { to { transform: scaleX(1); } }
 
-  /* ===== PAGE SYSTEM ===== */
   .page {
     display: none; min-height: 100svh; flex-direction: column;
     opacity: 0; transform: translateY(10px);
   }
   .page.active { display: flex; animation: pageIn 0.5s cubic-bezier(0.4,0,0.2,1) forwards; }
   @keyframes pageIn { to { opacity: 1; transform: translateY(0); } }
-
   @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ===== NAV ===== */
   nav {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 1.75rem 5vw; flex-shrink: 0;
+    padding: 1rem 5vw; flex-shrink: 0;
   }
   .nav-logo {
     font-family: var(--serif); font-size: 1rem; color: var(--text); text-decoration: none;
     cursor: pointer; background: none; border: none; position: relative; overflow: hidden;
-    display: inline-block; vertical-align: bottom;
+    display: inline-block; vertical-align: bottom; line-height: 1.25;
   }
   .nav-logo .logo-default, .nav-logo .logo-home {
     display: block; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
@@ -93,107 +89,175 @@
   }
   .nav-contact:hover { color: var(--text); }
 
-  /* ===== MAIN ===== */
-  main { display: flex; flex-direction: column; justify-content: center; padding: 1.5rem 5vw 3rem; flex: 1; gap: 2.75rem; }
+  main {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0.25rem 5vw 0.9rem; flex: 1; gap: 1.15rem;
+  }
 
   .headline {
-    font-family: var(--serif); font-size: clamp(2.1rem, 5.5vw, 4rem); font-weight: 400;
-    line-height: 1.06; letter-spacing: -0.02em; color: var(--text);
-    max-width: 18ch; opacity: 0; animation: fadeUp 0.6s ease 0.1s forwards;
+    font-family: var(--serif); font-size: clamp(1.65rem, 3.6vw, 2.75rem); font-weight: 400;
+    line-height: 1.08; letter-spacing: -0.02em; color: var(--text);
+    white-space: nowrap; max-width: none;
+    margin-bottom: 8px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.1s forwards;
   }
   .headline em { font-style: italic; color: var(--muted); }
 
   .section-label {
-    font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 0.9rem; display: block;
+    font-size: 0.64rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.55rem; display: block;
   }
 
-  /* ===== MAIN CARDS ===== */
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .cards {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem; align-items: stretch;
+  }
 
   .card {
-    background: var(--card-bg); text-decoration: none; color: #0a0a0a;
-    display: flex; flex-direction: column; gap: 1rem; border-radius: 10px;
+    --card-bg: var(--c1);
+    background-color: var(--card-bg);
+    background-image: var(--card-image);
+    background-size: cover;
+    background-position: center;
+    text-decoration: none; color: #fff;
+    display: flex; flex-direction: column; gap: 0.38rem; border-radius: 10px;
     cursor: pointer; border: none; text-align: left; font-family: var(--sans);
     transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, filter 0.3s ease;
-    position: relative; overflow: hidden; padding: 2.25rem 2rem;
+    position: relative; overflow: hidden; padding: 1.05rem 1.1rem 0.9rem;
+    min-height: 158px;
     opacity: 0; animation: fadeUp 0.6s ease forwards;
+    isolation: isolate;
   }
   .cards .card:nth-child(1) { animation-delay: 0.2s; }
   .cards .card:nth-child(2) { animation-delay: 0.3s; }
   .cards .card:nth-child(3) { animation-delay: 0.4s; }
 
-  .card::before {
-    content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.18);
-    transform: translateY(101%); transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
-    pointer-events: none;
+  .card::after {
+    content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: color-mix(in srgb, var(--card-bg) 58%, transparent);
+    mix-blend-mode: color;
   }
-  .card:hover { transform: translateY(-8px) scale(1.02); filter: brightness(1.05); box-shadow: 0 24px 48px rgba(0,0,0,0.4); }
-  .card:hover::before { transform: translateY(0); }
+  .card::before {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--card-bg) 10%, rgba(0,0,0,0.15)) 0%,
+      color-mix(in srgb, var(--card-bg) 55%, rgba(0,0,0,0.62)) 100%
+    );
+    pointer-events: none;
+    transition: background 0.35s ease;
+  }
+  .card > * { position: relative; z-index: 2; }
+
+  .card:hover {
+    transform: translateY(-6px) scale(1.015);
+    filter: brightness(1.06);
+    box-shadow: 0 18px 36px rgba(0,0,0,0.42);
+  }
+  .card:hover::before {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--card-bg) 4%, rgba(0,0,0,0.08)) 0%,
+      color-mix(in srgb, var(--card-bg) 48%, rgba(0,0,0,0.55)) 100%
+    );
+  }
   .card:hover .card-arrow { transform: translateX(5px) rotate(-40deg); }
   .card:hover .card-num { opacity: 0.7; transform: scale(1.15); }
   .card:active { transform: translateY(-2px) scale(0.99); transition-duration: 0.08s; }
 
-  .card-1 { --card-bg: var(--c1); }
-  .card-2 { --card-bg: var(--c2); }
+  .card-1 { --card-bg: var(--c1); --card-image: url('images/work.png'); }
+  .card-2 { --card-bg: var(--c2); --card-image: url('images/design.png'); }
   .card-3 { --card-bg: var(--c3); }
 
   .card-num {
-    font-family: var(--serif); font-style: italic; font-size: 0.875rem; color: rgba(0,0,0,0.4);
+    font-family: var(--serif); font-style: italic; font-size: 0.74rem; color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 14px rgba(0,0,0,0.65), 0 0 2px #000;
     transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; display: inline-block;
   }
   .card-title {
-    font-family: var(--serif); font-size: clamp(1.15rem, 2vw, 1.6rem); font-weight: 400;
-    line-height: 1.15; letter-spacing: -0.015em; color: #0a0a0a;
+    font-family: var(--serif); font-size: clamp(1rem, 1.5vw, 1.28rem); font-weight: 500;
+    line-height: 1.15; letter-spacing: -0.015em; color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.92), 0 0 16px rgba(0,0,0,0.7), 0 0 2px #000;
   }
-  .card-desc { font-size: 0.83rem; color: rgba(0,0,0,0.55); font-weight: 400; line-height: 1.6; flex: 1; }
+  .card-desc {
+    font-size: 0.74rem; color: #fff; font-weight: 500;
+    line-height: 1.4; flex: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 14px rgba(0,0,0,0.65), 0 0 2px #000;
+  }
   .card-arrow {
-    font-size: 1rem; color: rgba(0,0,0,0.4); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 0.9rem; color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 14px rgba(0,0,0,0.65), 0 0 2px #000;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     margin-top: auto; display: inline-block;
   }
 
-  /* ===== SPLIT "OR" CARD ===== */
-  .card.card-split { padding: 0; }
+  .card.card-split { padding: 0; background-image: none; }
+  .card.card-split::before,
+  .card.card-split::after { display: none; }
+
   .split-half {
-    flex: 1; display: flex; flex-direction: column; gap: 0.65rem;
-    padding: 1.75rem 1.85rem; text-decoration: none; color: #0a0a0a;
-    position: relative; z-index: 2; transition: background 0.25s ease;
+    flex: 1; display: flex; flex-direction: column; gap: 0.2rem;
+    padding: 0.72rem 1rem 0.7rem; text-decoration: none; color: #fff;
+    position: relative; z-index: 2; overflow: hidden;
+    background-color: var(--half-bg, var(--c3));
+    background-image: var(--half-image);
+    background-size: cover;
+    background-position: center;
+    isolation: isolate;
+    transition: filter 0.25s ease;
   }
-  .split-half:hover { background: rgba(255,255,255,0.16); }
+  .split-half::after {
+    content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: color-mix(in srgb, var(--half-bg) 58%, transparent);
+    mix-blend-mode: color;
+  }
+  .split-half::before {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--half-bg) 8%, rgba(0,0,0,0.12)),
+      color-mix(in srgb, var(--half-bg) 52%, rgba(0,0,0,0.62))
+    );
+    transition: background 0.25s ease;
+  }
+  .split-half > * { position: relative; z-index: 2; }
+  .split-half:hover { filter: brightness(1.08); }
   .split-half:hover .card-arrow { transform: translateX(5px) rotate(-40deg); }
-  .split-divider { position: relative; height: 1px; background: rgba(0,0,0,0.18); margin: 0 1.5rem; z-index: 2; }
+  .split-notary { --half-bg: var(--c3); --half-image: url('images/notary.png'); }
+  .split-photo { --half-bg: #7ad0c6; --half-image: url('images/photo.png'); }
+
+  .split-divider { position: relative; height: 1px; background: rgba(0,0,0,0.22); margin: 0; z-index: 3; }
   .split-badge {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     background: #0a0a0a; color: var(--c1); font-family: var(--serif); font-style: italic;
-    font-size: 0.72rem; width: 34px; height: 34px; border-radius: 50%;
+    font-size: 0.64rem; width: 28px; height: 28px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.35); pointer-events: none;
   }
 
-  /* ===== QUICK LINKS ===== */
-  .quicklinks { display: flex; flex-wrap: wrap; gap: 0.7rem; }
-  .quicklinks a {
-    opacity: 0; animation: fadeUp 0.5s ease forwards;
-  }
+  .quicklinks { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quicklinks a { opacity: 0; animation: fadeUp 0.5s ease forwards; }
   .quicklinks a:nth-child(1) { animation-delay: 0.5s; }
   .quicklinks a:nth-child(2) { animation-delay: 0.56s; }
   .quicklinks a:nth-child(3) { animation-delay: 0.62s; }
-  .quicklinks a:nth-child(4) { animation-delay: 0.68s; }
 
   .quicklink {
-    display: inline-flex; align-items: center; gap: 0.55rem;
-    padding: 0.7rem 1.15rem; border-radius: 999px;
-    border: 1px solid var(--line); background: rgba(255,255,255,0.02);
-    color: var(--text); text-decoration: none; font-size: 0.8rem; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.42rem 0.85rem; border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--ql-color) 35%, var(--line));
+    background: color-mix(in srgb, var(--ql-color) 8%, rgba(255,255,255,0.02));
+    color: var(--ql-color); text-decoration: none; font-size: 0.73rem; font-weight: 500;
     transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
-  .quicklink:hover { transform: translateY(-3px); border-color: var(--ql-color); color: var(--ql-color); box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
-  .quicklink:nth-of-type(3n+1) { --ql-color: var(--c1); }
-  .quicklink:nth-of-type(3n+2) { --ql-color: var(--c2); }
-  .quicklink:nth-of-type(3n+3) { --ql-color: var(--c3); }
+  .quicklink:hover {
+    transform: translateY(-3px); border-color: var(--ql-color); color: var(--ql-color);
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--ql-color) 18%, rgba(0,0,0,0.35));
+  }
+  .quicklink-blue { --ql-color: var(--c3); }
+  .quicklink-green { --ql-color: var(--c1); }
+  .quicklink-pink { --ql-color: var(--c2); }
 
-  /* ===== SOCIALS ===== */
-  .socials { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+  .socials { display: flex; flex-wrap: wrap; gap: 0.45rem; }
   .socials a { opacity: 0; animation: fadeUp 0.5s ease forwards; }
   .socials a:nth-child(1) { animation-delay: 0.72s; }
   .socials a:nth-child(2) { animation-delay: 0.76s; }
@@ -202,27 +266,28 @@
   .socials a:nth-child(5) { animation-delay: 0.88s; }
 
   .social-btn {
-    width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
     border: 1px solid var(--line); background: rgba(255,255,255,0.02); color: var(--muted);
     transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
-  .social-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .social-btn:hover { transform: translateY(-3px); color: var(--soc-color); border-color: var(--soc-color); box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
+  .social-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .social-btn:hover {
+    transform: translateY(-3px); color: var(--soc-color); border-color: var(--soc-color);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  }
   .social-btn:nth-of-type(5n+1) { --soc-color: var(--c1); }
   .social-btn:nth-of-type(5n+2) { --soc-color: var(--c2); }
   .social-btn:nth-of-type(5n+3) { --soc-color: var(--c3); }
   .social-btn:nth-of-type(5n+4) { --soc-color: var(--c1); }
   .social-btn:nth-of-type(5n+5) { --soc-color: var(--c2); }
 
-  /* ===== FOOTER ===== */
   footer {
-    padding: 1.5rem 5vw; display: flex; justify-content: space-between;
-    font-size: 0.75rem; color: var(--muted); flex-shrink: 0;
+    padding: 0.65rem 5vw 0.85rem; display: flex; justify-content: space-between;
+    font-size: 0.7rem; color: var(--muted); flex-shrink: 0;
   }
   footer a { color: inherit; text-decoration: none; }
   footer a:hover { color: var(--text); }
 
-  /* ===== CONTACT PAGE ===== */
   .contact-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2rem 5vw 4rem; }
   .contact-headline {
     font-family: var(--serif); font-size: clamp(2rem, 5vw, 3.75rem); font-weight: 400;
@@ -253,15 +318,52 @@
   .contact-value { font-family: var(--serif); font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 400; letter-spacing: -0.01em; flex: 1; }
   .contact-arrow { color: var(--muted); font-size: 1rem; transition: transform 0.25s ease; flex-shrink: 0; }
 
+  @media (min-width: 960px) {
+    body { height: 100svh; overflow: hidden; }
+    .page.active { height: 100svh; overflow: hidden; }
+  }
+
+  @media (max-width: 959px) {
+    body { height: auto; overflow: auto; }
+    .page.active { height: auto; min-height: 100svh; overflow: visible; }
+    .headline {
+      white-space: normal;
+      font-size: clamp(1.55rem, 7vw, 2.35rem);
+      line-height: 1.12;
+    }
+    nav { padding: 1rem 5vw 0.4rem; }
+    main { gap: 1.15rem; padding: 0.6rem 5vw 1.6rem; }
+    .cards { gap: 0.7rem; }
+  }
+
+  @media (max-width: 820px) {
+    .cards { grid-template-columns: 1fr; }
+    .card { min-height: 0; padding: 1.15rem 1.15rem 1rem; }
+    .card-title { font-size: 1.2rem; }
+    .card-desc { font-size: 0.82rem; }
+    .split-half { padding: 1rem 1.15rem; }
+    .quicklink { min-height: 40px; }
+    .social-btn { width: 40px; height: 40px; }
+  }
+
   @media (max-width: 640px) {
-    .cards { grid-template-columns: 1fr; gap: 0.75rem; }
-    .contact-value { font-size: 1rem; }
+    nav { padding: 0.85rem 5vw 0.25rem; gap: 0.75rem; }
+    .nav-logo { font-size: 0.92rem; }
+    .headline { font-size: clamp(1.45rem, 8.2vw, 2rem); margin-bottom: 10px; }
+    main { gap: 1.35rem; padding: 0.5rem 5vw 1.75rem; }
+    .cards { gap: 0.7rem; }
+    .card, .split-half { min-height: 132px; }
+    .contact-main { padding: 1.25rem 5vw 2.5rem; }
+    .contact-headline { margin-bottom: 1.5rem; }
+    .contact-row { flex-wrap: wrap; padding: 1.15rem 0; gap: 0.35rem 1rem; }
+    .contact-label { min-width: 0; width: 100%; }
+    .contact-value { font-size: 1.05rem; }
+    footer { padding: 0.7rem 5vw 1.1rem; gap: 0.5rem; flex-wrap: wrap; }
   }
 </style>
 </head>
 <body>
 
-  <!-- LOADER -->
   <div id="loader">
     <div class="loader-inner">
       <div class="loader-name">Conor McCutcheon</div>
@@ -269,59 +371,56 @@
     </div>
   </div>
 
-  <!-- HOME PAGE -->
   <div class="page active" id="page-home">
     <nav>
-      <button class="nav-logo" onclick="show('home')">
-        <span class="logo-default">Conor McCutcheon</span>
-        <span class="logo-home">← Home</span>
-      </button>
       <button class="nav-contact" onclick="show('contact')">Contact</button>
+      <a class="nav-logo" href="https://consistency.ink/windows-xp" target="_blank" rel="noopener">
+        <span class="logo-default">Conor McCutcheon</span>
+        <span class="logo-home">View my work →</span>
+      </a>
     </nav>
 
     <main>
       <h1 class="headline">What brings you <em>here today?</em></h1>
 
       <div class="cards">
-        <!-- Split OR card: two portfolio destinations in one -->
-        <div class="card card-1 card-split">
-          <a href="https://consistency.ink" class="split-half">
-            <span class="card-num">i.</span>
-            <h2 class="card-title">Design Portfolio Hub</h2>
-            <p class="card-desc">The full creative universe — brand, video, and design work.</p>
-            <span class="card-arrow">→</span>
-          </a>
-          <div class="split-divider"><span class="split-badge">OR</span></div>
-          <a href="https://consistency.ink/windows-xp/" class="split-half">
-            <span class="card-num">i.</span>
-            <h2 class="card-title">View My Work</h2>
-            <p class="card-desc">Jump into the retro desktop portfolio experience.</p>
-            <span class="card-arrow">→</span>
-          </a>
-        </div>
+        <a class="card card-1" href="https://consistency.ink/windows-xp/" target="_blank" rel="noopener">
+          <span class="card-num">i.</span>
+          <h2 class="card-title">View My Work</h2>
+          <p class="card-desc">Jump into the retro desktop portfolio — brand, video, and design work.</p>
+          <span class="card-arrow">→</span>
+        </a>
 
-        <a class="card card-2" href="/design">
+        <a class="card card-2" href="https://www.consistency.ink/design/" target="_blank" rel="noopener">
           <span class="card-num">ii.</span>
           <h2 class="card-title">Graphic Design Services</h2>
           <p class="card-desc">Hire me for a project — services, pricing, and contact all in one place.</p>
           <span class="card-arrow">→</span>
         </a>
 
-        <a class="card card-3" href="https://consistency.ink/windows-xp/notary">
-          <span class="card-num">iii.</span>
-          <h2 class="card-title">Mobile Notary</h2>
-          <p class="card-desc">Licensed mobile notary for loan signings and legal documents — I come to you.</p>
-          <span class="card-arrow">→</span>
-        </a>
+        <div class="card card-3 card-split">
+          <a href="https://consistency.ink/windows-xp/notary" class="split-half split-notary" target="_blank" rel="noopener">
+            <span class="card-num">iii.</span>
+            <h2 class="card-title">Mobile Notary</h2>
+            <p class="card-desc">Licensed mobile notary for loan signings and legal documents — I come to you.</p>
+            <span class="card-arrow">→</span>
+          </a>
+          <div class="split-divider"><span class="split-badge">OR</span></div>
+          <a href="https://mccutcheon.myportfolio.com" class="split-half split-photo" target="_blank" rel="noopener">
+            <span class="card-num">iv.</span>
+            <h2 class="card-title">Photography &amp; Booking</h2>
+            <p class="card-desc">Portraits, sessions, and booking — see the work and lock a date.</p>
+            <span class="card-arrow">→</span>
+          </a>
+        </div>
       </div>
 
       <div>
         <span class="section-label">More tools</span>
         <div class="quicklinks">
-          <a class="quicklink" href="https://conorcrownawardproofs-star.github.io/ordertracker/">🏆 Crown Awards Tracker</a>
-          <a class="quicklink" href="https://conorcrownawardproofs-star.github.io/budgeter/">💰 Private Budgeter</a>
-          <a class="quicklink" href="https://conorcrownawardproofs-star.github.io/bingo/">🎲 Friday Bingo Player</a>
-          <a class="quicklink" href="https://mccutcheon.myportfolio.com">📸 Photography & Booking</a>
+          <a class="quicklink quicklink-blue" href="https://conorcrownawardproofs-star.github.io/ordertracker/">🏆 Crown Awards Tracker</a>
+          <a class="quicklink quicklink-green" href="https://conorcrownawardproofs-star.github.io/budgeter/">💰 Private Budgeter</a>
+          <a class="quicklink quicklink-pink" href="https://conorcrownawardproofs-star.github.io/bingo/">🎲 Friday Bingo Player</a>
         </div>
       </div>
 
@@ -353,19 +452,17 @@
     </footer>
   </div>
 
-  <!-- CONTACT PAGE -->
   <div class="page" id="page-contact">
     <nav>
-      <button class="nav-logo" onclick="show('home')">
-        <span class="logo-default">Conor McCutcheon</span>
-        <span class="logo-home">← Home</span>
-      </button>
       <button class="nav-contact" onclick="show('home')">← Back</button>
+      <a class="nav-logo" href="https://consistency.ink/windows-xp" target="_blank" rel="noopener">
+        <span class="logo-default">Conor McCutcheon</span>
+        <span class="logo-home">View my work →</span>
+      </a>
     </nav>
 
     <div class="contact-main">
       <h1 class="contact-headline">Get in touch.</h1>
-
       <div class="contact-links">
         <a href="tel:+19144322249" class="contact-row contact-row-1">
           <span class="contact-label">Phone</span>
@@ -382,9 +479,9 @@
           <span class="contact-value">@Consistencyy</span>
           <span class="contact-arrow">→</span>
         </a>
-        <a href="https://github.com/conorcrownawardproofs-star" target="_blank" rel="noopener" class="contact-row contact-row-4">
+        <a href="https://github.com/consistencyy" target="_blank" rel="noopener" class="contact-row contact-row-4">
           <span class="contact-label">GitHub</span>
-          <span class="contact-value">@conorcrownawardproofs-star</span>
+          <span class="contact-value">@consistencyy</span>
           <span class="contact-arrow">→</span>
         </a>
       </div>
