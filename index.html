@@ -1,356 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Hub</title>
-    <style>
-        /* Base Reset & Typography */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conor McCutcheon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Variables for Default Theme (Black Metallic) */
-        :root {
-            --bg-1: #0f1011; --bg-2: #2b2d30; --bg-3: #17181a; --bg-4: #3a3f44;
-            --theme-accent: rgba(255, 255, 255, 0.3); --theme-hover: rgba(255, 255, 255, 0.4);
-            --bg-pattern: repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px);
-            --pattern-size: auto;
-            --pattern-anim: none;
-        }
+  :root {
+    --bg: #0a0a0a;
+    --text: #f0ede8;
+    --muted: #555550;
+    --line: #1a1a18;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+    --c1: #c8f04a;
+    --c2: #f07aaa;
+    --c3: #6ab4f5;
+  }
 
-        /* Standard Color Themes */
-        body.theme-blue { --bg-1: #090e17; --bg-2: #1b273d; --bg-3: #111a2b; --bg-4: #243555; --theme-accent: rgba(100, 170, 255, 0.3); --theme-hover: rgba(100, 170, 255, 0.5); }
-        body.theme-red { --bg-1: #170a0a; --bg-2: #3a1a1a; --bg-3: #261111; --bg-4: #542525; --theme-accent: rgba(255, 100, 100, 0.3); --theme-hover: rgba(255, 100, 100, 0.5); }
-        body.theme-yellow { --bg-1: #17150a; --bg-2: #3a351a; --bg-3: #262311; --bg-4: #544d25; --theme-accent: rgba(255, 220, 100, 0.3); --theme-hover: rgba(255, 220, 100, 0.5); }
-        body.theme-pink { --bg-1: #170a13; --bg-2: #3a1a2e; --bg-3: #26111e; --bg-4: #542544; --theme-accent: rgba(255, 120, 200, 0.3); --theme-hover: rgba(255, 120, 200, 0.5); }
-        body.theme-purple { --bg-1: #110a17; --bg-2: #2b1a3a; --bg-3: #1c1126; --bg-4: #3e2554; --theme-accent: rgba(180, 120, 255, 0.3); --theme-hover: rgba(180, 120, 255, 0.5); }
-        body.theme-green { --bg-1: #0a170f; --bg-2: #1a3a24; --bg-3: #112618; --bg-4: #255433; --theme-accent: rgba(120, 255, 150, 0.3); --theme-hover: rgba(120, 255, 150, 0.5); }
-        body.theme-aquatic { --bg-1: #001f2e; --bg-2: #004d66; --bg-3: #002b40; --bg-4: #007399; --theme-accent: rgba(0, 220, 255, 0.3); --theme-hover: rgba(0, 220, 255, 0.5); }
+  html { scroll-behavior: smooth; }
 
-        /* Custom Elaborate Themes */
-        body.theme-underwater {
-            --bg-1: #00223e; --bg-2: #1d976c; --bg-3: #004e92; --bg-4: #0f8a84;
-            --theme-accent: rgba(0, 255, 200, 0.3); --theme-hover: rgba(0, 255, 200, 0.5);
-            --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M0,60 Q30,0 60,60 T120,60 M0,120 Q30,60 60,120 T120,120 M0,0 Q30,-60 60,0 T120,0' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='3'/%3E%3C/svg%3E");
-            --pattern-size: 120px 120px;
-            --pattern-anim: driftTexture 20s linear infinite;
-        }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100svh;
+    overflow-x: hidden;
+  }
 
-        body.theme-greenhouse {
-            --bg-1: #05130b; --bg-2: #102d1d; --bg-3: #0a1f14; --bg-4: #153b28;
-            --theme-accent: rgba(100, 255, 150, 0.3); --theme-hover: rgba(100, 255, 150, 0.5);
-            --bg-pattern: linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(0deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-            --pattern-size: 100px 100px;
-        }
+  /* ===== LOADER ===== */
+  #loader {
+    position: fixed; inset: 0; background: var(--bg); z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none; transition: opacity 0.6s ease;
+  }
+  #loader.hidden { opacity: 0; }
+  .loader-inner { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+  .loader-name {
+    font-family: var(--serif); font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 400; letter-spacing: -0.02em; color: var(--text);
+    opacity: 0; animation: fadeWord 0.6s ease 0.2s forwards;
+  }
+  .loader-bar-wrap { width: 180px; height: 1px; background: #1e1e1c; position: relative; overflow: hidden; }
+  .loader-bar {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3));
+    transform: scaleX(0); transform-origin: left;
+    animation: fillBar 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+  }
+  @keyframes fadeWord { to { opacity: 1; } }
+  @keyframes fillBar { to { transform: scaleX(1); } }
 
-        body.theme-paperplanes {
-            --bg-1: #0f172a; --bg-2: #1e293b; --bg-3: #172033; --bg-4: #334155;
-            --theme-accent: rgba(200, 220, 255, 0.3); --theme-hover: rgba(200, 220, 255, 0.5);
-            --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'%3E%3Cpath d='M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13'/%3E%3C/svg%3E");
-            --pattern-size: 80px 80px;
-            --pattern-anim: driftTexture 35s linear infinite reverse;
-        }
+  /* ===== PAGE SYSTEM ===== */
+  .page {
+    display: none; min-height: 100svh; flex-direction: column;
+    opacity: 0; transform: translateY(10px);
+  }
+  .page.active { display: flex; animation: pageIn 0.5s cubic-bezier(0.4,0,0.2,1) forwards; }
+  @keyframes pageIn { to { opacity: 1; transform: translateY(0); } }
 
-        /* Animated Background */
-        body {
-            background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4));
-            background-size: 400% 400%;
-            animation: metallicShimmer 15s ease infinite;
-            color: #ffffff;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            transition: background 1s ease;
-        }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-        body::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-pattern);
-            background-size: var(--pattern-size);
-            animation: var(--pattern-anim);
-            pointer-events: none; z-index: 0;
-            transition: background 1s ease;
-        }
-        
-        body::after {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.5) 100%);
-            pointer-events: none; z-index: 0;
-        }
+  /* ===== NAV ===== */
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.75rem 5vw; flex-shrink: 0;
+  }
+  .nav-logo {
+    font-family: var(--serif); font-size: 1rem; color: var(--text); text-decoration: none;
+    cursor: pointer; background: none; border: none; position: relative; overflow: hidden;
+    display: inline-block; vertical-align: bottom;
+  }
+  .nav-logo .logo-default, .nav-logo .logo-home {
+    display: block; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  }
+  .nav-logo .logo-home {
+    position: absolute; top: 0; left: 0; white-space: nowrap;
+    transform: translateY(100%); opacity: 0; font-style: italic; color: var(--muted);
+  }
+  .nav-logo:hover .logo-default { transform: translateY(-100%); opacity: 0; }
+  .nav-logo:hover .logo-home { transform: translateY(0); opacity: 1; }
 
-        @keyframes metallicShimmer { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes driftTexture { 0% { background-position: 0 0; } 100% { background-position: 120px 120px; } }
+  .nav-contact {
+    font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; background: none; border: none; cursor: pointer;
+    transition: color 0.2s; font-family: var(--sans);
+  }
+  .nav-contact:hover { color: var(--text); }
 
-        /* Generic Glass Panel */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            color: #e0e0e0;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            text-decoration: none;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .glass-panel:hover {
-            border-color: var(--theme-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-            color: #ffffff;
-        }
+  /* ===== MAIN ===== */
+  main { display: flex; flex-direction: column; justify-content: center; padding: 1.5rem 5vw 3rem; flex: 1; gap: 2.75rem; }
 
-        /* Nav Controls */
-        .top-left-nav { position: absolute; top: 30px; left: 30px; display: flex; gap: 10px; z-index: 10; }
-        .btn-social { width: 36px; height: 36px; border-radius: 8px; }
-        .btn-social svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .headline {
+    font-family: var(--serif); font-size: clamp(2.1rem, 5.5vw, 4rem); font-weight: 400;
+    line-height: 1.06; letter-spacing: -0.02em; color: var(--text);
+    max-width: 18ch; opacity: 0; animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+  .headline em { font-style: italic; color: var(--muted); }
 
-        .top-right-nav { position: absolute; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 10; }
-        .btn-small { padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; }
+  .section-label {
+    font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.9rem; display: block;
+  }
 
-        .bottom-left-nav { position: absolute; bottom: 30px; left: 30px; z-index: 20; }
-        .theme-btn { width: 36px; height: 36px; border-radius: 8px; cursor: pointer; }
-        .theme-menu {
-            position: absolute; bottom: 50px; left: 0;
-            background: rgba(15, 16, 17, 0.85); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
-            padding: 10px; display: flex; flex-direction: column; gap: 5px; width: 220px;
-            opacity: 0; pointer-events: none; transform: translateY(10px);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        .bottom-left-nav.active .theme-menu { opacity: 1; pointer-events: auto; transform: translateY(0); }
-        .theme-option {
-            background: transparent; border: none; color: #b0b0b0;
-            text-align: left; padding: 10px 12px; border-radius: 8px;
-            cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: all 0.2s ease;
-        }
-        .theme-option:hover, .theme-option.active { background: rgba(255, 255, 255, 0.1); color: #ffffff; padding-left: 16px; }
-        .menu-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 5px 0; }
+  /* ===== MAIN CARDS ===== */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 
-        /* Main Center Layout */
-        .main-container { display: flex; align-items: center; justify-content: center; gap: 40px; z-index: 10; }
+  .card {
+    background: var(--card-bg); text-decoration: none; color: #0a0a0a;
+    display: flex; flex-direction: column; gap: 1rem; border-radius: 10px;
+    cursor: pointer; border: none; text-align: left; font-family: var(--sans);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, filter 0.3s ease;
+    position: relative; overflow: hidden; padding: 2.25rem 2rem;
+    opacity: 0; animation: fadeUp 0.6s ease forwards;
+  }
+  .cards .card:nth-child(1) { animation-delay: 0.2s; }
+  .cards .card:nth-child(2) { animation-delay: 0.3s; }
+  .cards .card:nth-child(3) { animation-delay: 0.4s; }
 
-        /* Shared Four Main Button Image Container Base */
-        .btn-main-bg {
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            position: relative;
-            overflow: hidden;
-        }
+  .card::before {
+    content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.18);
+    transform: translateY(101%); transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+    pointer-events: none;
+  }
+  .card:hover { transform: translateY(-8px) scale(1.02); filter: brightness(1.05); box-shadow: 0 24px 48px rgba(0,0,0,0.4); }
+  .card:hover::before { transform: translateY(0); }
+  .card:hover .card-arrow { transform: translateX(5px) rotate(-40deg); }
+  .card:hover .card-num { opacity: 0.7; transform: scale(1.15); }
+  .card:active { transform: translateY(-2px) scale(0.99); transition-duration: 0.08s; }
 
-        /* Mild overlay tint for readability */
-        .btn-main-bg::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.15);
-            transition: background 0.3s ease;
-            z-index: 1;
-        }
-        .btn-main-bg:hover::before {
-            background: rgba(0, 0, 0, 0.0);
-        }
+  .card-1 { --card-bg: var(--c1); }
+  .card-2 { --card-bg: var(--c2); }
+  .card-3 { --card-bg: var(--c3); }
 
-        /* Button Text with 35% Black Glow */
-        .btn-glow-text {
-            position: relative;
-            z-index: 2;
-            color: #ffffff !important;
-            text-shadow: 
-                0 0 10px rgba(0, 0, 0, 0.35),
-                0 0 18px rgba(0, 0, 0, 0.35),
-                0 2px 4px rgba(0, 0, 0, 0.8);
-        }
+  .card-num {
+    font-family: var(--serif); font-style: italic; font-size: 0.875rem; color: rgba(0,0,0,0.4);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; display: inline-block;
+  }
+  .card-title {
+    font-family: var(--serif); font-size: clamp(1.15rem, 2vw, 1.6rem); font-weight: 400;
+    line-height: 1.15; letter-spacing: -0.015em; color: #0a0a0a;
+  }
+  .card-desc { font-size: 0.83rem; color: rgba(0,0,0,0.55); font-weight: 400; line-height: 1.6; flex: 1; }
+  .card-arrow {
+    font-size: 1rem; color: rgba(0,0,0,0.4); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-top: auto; display: inline-block;
+  }
 
-        /* Specific Background PNG assignments */
-        .bg-btn-left { background-image: url('btn-left.png'); }
-        .bg-btn-center-top { background-image: url('btn-center-top.png'); }
-        .bg-btn-center-bottom { background-image: url('btn-center-bottom.png'); }
-        .bg-btn-right { background-image: url('btn-right.png'); }
+  /* ===== SPLIT "OR" CARD ===== */
+  .card.card-split { padding: 0; }
+  .split-half {
+    flex: 1; display: flex; flex-direction: column; gap: 0.65rem;
+    padding: 1.75rem 1.85rem; text-decoration: none; color: #0a0a0a;
+    position: relative; z-index: 2; transition: background 0.25s ease;
+  }
+  .split-half:hover { background: rgba(255,255,255,0.16); }
+  .split-half:hover .card-arrow { transform: translateX(5px) rotate(-40deg); }
+  .split-divider { position: relative; height: 1px; background: rgba(0,0,0,0.18); margin: 0 1.5rem; z-index: 2; }
+  .split-badge {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: #0a0a0a; color: var(--c1); font-family: var(--serif); font-style: italic;
+    font-size: 0.72rem; width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35); pointer-events: none;
+  }
 
-        /* Side Square Buttons */
-        .btn-square {
-            width: 220px; height: 220px; border-radius: 20px; font-size: 1.1rem;
-            font-weight: 400; letter-spacing: 0.5px; text-align: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.4);
-        }
-        .btn-square:hover {
-            transform: scale(1.05); box-shadow: inset 0 0 20px rgba(255,255,255,0.02), 0 15px 40px rgba(0,0,0,0.6);
-        }
+  /* ===== QUICK LINKS ===== */
+  .quicklinks { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+  .quicklinks a {
+    opacity: 0; animation: fadeUp 0.5s ease forwards;
+  }
+  .quicklinks a:nth-child(1) { animation-delay: 0.5s; }
+  .quicklinks a:nth-child(2) { animation-delay: 0.56s; }
+  .quicklinks a:nth-child(3) { animation-delay: 0.62s; }
+  .quicklinks a:nth-child(4) { animation-delay: 0.68s; }
 
-        /* Center Split Button */
-        .btn-center-container {
-            position: relative;
-            display: flex; flex-direction: column; width: 320px; height: 320px;
-            background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px; overflow: hidden; 
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.3), 0 15px 40px rgba(0,0,0,0.5);
-            transition: all 0.4s ease;
-        }
-        .btn-center-container:hover {
-            border-color: var(--theme-hover); transform: translateY(-4px);
-            box-shadow: inset 0 0 30px rgba(255,255,255,0.03), 0 20px 50px rgba(0,0,0,0.7);
-        }
-        
-        .center-half {
-            flex: 1; display: flex; justify-content: center; align-items: center;
-            text-align: center; text-decoration: none;
-            font-size: 1.2rem; font-weight: 400; transition: background 0.3s ease;
-            position: relative; padding: 20px;
-        }
-        .center-half-main { font-size: 1.3rem; font-weight: 500; letter-spacing: 1px; }
+  .quicklink {
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    padding: 0.7rem 1.15rem; border-radius: 999px;
+    border: 1px solid var(--line); background: rgba(255,255,255,0.02);
+    color: var(--text); text-decoration: none; font-size: 0.8rem; font-weight: 500;
+    transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .quicklink:hover { transform: translateY(-3px); border-color: var(--ql-color); color: var(--ql-color); box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
+  .quicklink:nth-of-type(3n+1) { --ql-color: var(--c1); }
+  .quicklink:nth-of-type(3n+2) { --ql-color: var(--c2); }
+  .quicklink:nth-of-type(3n+3) { --ql-color: var(--c3); }
 
-        /* Center Divide Badge "OR" */
-        .center-divider-badge {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            background: rgba(15, 16, 17, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 50%;
-            width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            pointer-events: none;
-            text-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
-        }
+  /* ===== SOCIALS ===== */
+  .socials { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+  .socials a { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+  .socials a:nth-child(1) { animation-delay: 0.72s; }
+  .socials a:nth-child(2) { animation-delay: 0.76s; }
+  .socials a:nth-child(3) { animation-delay: 0.8s; }
+  .socials a:nth-child(4) { animation-delay: 0.84s; }
+  .socials a:nth-child(5) { animation-delay: 0.88s; }
 
-        /* Divider Line */
-        .btn-center-container::after {
-            content: ''; position: absolute; top: 50%; left: 10%; width: 80%; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
-            transform: translateY(-50%); z-index: 5; pointer-events: none;
-        }
+  .social-btn {
+    width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line); background: rgba(255,255,255,0.02); color: var(--muted);
+    transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .social-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .social-btn:hover { transform: translateY(-3px); color: var(--soc-color); border-color: var(--soc-color); box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
+  .social-btn:nth-of-type(5n+1) { --soc-color: var(--c1); }
+  .social-btn:nth-of-type(5n+2) { --soc-color: var(--c2); }
+  .social-btn:nth-of-type(5n+3) { --soc-color: var(--c3); }
+  .social-btn:nth-of-type(5n+4) { --soc-color: var(--c1); }
+  .social-btn:nth-of-type(5n+5) { --soc-color: var(--c2); }
 
-        /* Responsive */
-        @media (max-width: 900px) {
-            .main-container { flex-direction: column; }
-            .top-right-nav { top: 20px; right: 50%; transform: translateX(50%); flex-wrap: wrap; justify-content: center; width: max-content; }
-            .top-left-nav { top: 80px; right: 50%; left: 50%; transform: translateX(-50%); justify-content: center; }
-            body { height: auto; padding: 150px 0 100px 0; overflow: auto; }
-            .bottom-left-nav { bottom: 20px; left: 50%; transform: translateX(-50%); }
-            .theme-menu { left: 50%; transform: translateX(-50%) translateY(10px); }
-            .bottom-left-nav.active .theme-menu { transform: translateX(-50%) translateY(0); }
-        }
-    </style>
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 1.5rem 5vw; display: flex; justify-content: space-between;
+    font-size: 0.75rem; color: var(--muted); flex-shrink: 0;
+  }
+  footer a { color: inherit; text-decoration: none; }
+  footer a:hover { color: var(--text); }
+
+  /* ===== CONTACT PAGE ===== */
+  .contact-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2rem 5vw 4rem; }
+  .contact-headline {
+    font-family: var(--serif); font-size: clamp(2rem, 5vw, 3.75rem); font-weight: 400;
+    letter-spacing: -0.02em; line-height: 1.06; color: var(--text); margin-bottom: 3rem;
+    opacity: 0; animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+  .contact-links { display: flex; flex-direction: column; gap: 0; max-width: 560px; }
+  .contact-row {
+    display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0;
+    border-top: 1px solid var(--line); text-decoration: none; color: var(--text);
+    transition: color 0.2s; gap: 1rem; opacity: 0; animation: fadeUp 0.5s ease forwards;
+  }
+  .contact-row:nth-child(1) { animation-delay: 0.2s; }
+  .contact-row:nth-child(2) { animation-delay: 0.28s; }
+  .contact-row:nth-child(3) { animation-delay: 0.36s; }
+  .contact-row:nth-child(4) { animation-delay: 0.44s; }
+  .contact-row:last-child { border-bottom: 1px solid var(--line); }
+  .contact-row:hover { color: var(--row-color); }
+  .contact-row:hover .contact-arrow { transform: translateX(4px); }
+  .contact-row-1 { --row-color: var(--c1); }
+  .contact-row-2 { --row-color: var(--c2); }
+  .contact-row-3 { --row-color: var(--c3); }
+  .contact-row-4 { --row-color: var(--c1); }
+  .contact-label {
+    font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); min-width: 72px;
+  }
+  .contact-value { font-family: var(--serif); font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 400; letter-spacing: -0.01em; flex: 1; }
+  .contact-arrow { color: var(--muted); font-size: 1rem; transition: transform 0.25s ease; flex-shrink: 0; }
+
+  @media (max-width: 640px) {
+    .cards { grid-template-columns: 1fr; gap: 0.75rem; }
+    .contact-value { font-size: 1rem; }
+  }
+</style>
 </head>
 <body>
 
-    <!-- Top Left Social Nav -->
-    <div class="top-left-nav">
-        <a href="https://www.youtube.com/@ConsistencyFilms" class="glass-panel btn-social" title="YouTube">
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-name">Conor McCutcheon</div>
+      <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <nav>
+      <button class="nav-logo" onclick="show('home')">
+        <span class="logo-default">Conor McCutcheon</span>
+        <span class="logo-home">← Home</span>
+      </button>
+      <button class="nav-contact" onclick="show('contact')">Contact</button>
+    </nav>
+
+    <main>
+      <h1 class="headline">What brings you <em>here today?</em></h1>
+
+      <div class="cards">
+        <!-- Split OR card: two portfolio destinations in one -->
+        <div class="card card-1 card-split">
+          <a href="https://consistency.ink" class="split-half">
+            <span class="card-num">i.</span>
+            <h2 class="card-title">Design Portfolio Hub</h2>
+            <p class="card-desc">The full creative universe — brand, video, and design work.</p>
+            <span class="card-arrow">→</span>
+          </a>
+          <div class="split-divider"><span class="split-badge">OR</span></div>
+          <a href="https://consistency.ink/windows-xp/" class="split-half">
+            <span class="card-num">i.</span>
+            <h2 class="card-title">View My Work</h2>
+            <p class="card-desc">Jump into the retro desktop portfolio experience.</p>
+            <span class="card-arrow">→</span>
+          </a>
+        </div>
+
+        <a class="card card-2" href="/design">
+          <span class="card-num">ii.</span>
+          <h2 class="card-title">Graphic Design Services</h2>
+          <p class="card-desc">Hire me for a project — services, pricing, and contact all in one place.</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <a class="card card-3" href="https://consistency.ink/windows-xp/notary">
+          <span class="card-num">iii.</span>
+          <h2 class="card-title">Mobile Notary</h2>
+          <p class="card-desc">Licensed mobile notary for loan signings and legal documents — I come to you.</p>
+          <span class="card-arrow">→</span>
+        </a>
+      </div>
+
+      <div>
+        <span class="section-label">More tools</span>
+        <div class="quicklinks">
+          <a class="quicklink" href="https://conorcrownawardproofs-star.github.io/ordertracker/">🏆 Crown Awards Tracker</a>
+          <a class="quicklink" href="https://conorcrownawardproofs-star.github.io/budgeter/">💰 Private Budgeter</a>
+          <a class="quicklink" href="https://conorcrownawardproofs-star.github.io/bingo/">🎲 Friday Bingo Player</a>
+          <a class="quicklink" href="https://mccutcheon.myportfolio.com">📸 Photography & Booking</a>
+        </div>
+      </div>
+
+      <div>
+        <span class="section-label">Find me elsewhere</span>
+        <div class="socials">
+          <a class="social-btn" href="https://www.youtube.com/@ConsistencyFilms" title="YouTube — Consistency Films" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
-        </a>
-        <a href="https://www.instagram.com/conormccutcheon_" class="glass-panel btn-social" title="Instagram">
+          </a>
+          <a class="social-btn" href="https://www.instagram.com/conormccutcheon_" title="Instagram" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        </a>
-        <a href="#" class="glass-panel btn-social" title="Facebook">
+          </a>
+          <a class="social-btn" href="#" title="Facebook">
             <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-        </a>
-        <a href="https://github.com/conorcrownawardproofs-star" class="glass-panel btn-social" title="GitHub">
+          </a>
+          <a class="social-btn" href="https://github.com/conorcrownawardproofs-star" title="GitHub" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-        </a>
-        <a href="#" class="glass-panel btn-social" title="TikTok">
+          </a>
+          <a class="social-btn" href="#" title="TikTok">
             <svg viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
-        </a>
-    </div>
-
-    <!-- Top Right Nav -->
-    <div class="top-right-nav">
-        <a href="https://conorcrownawardproofs-star.github.io/bingo/" class="glass-panel btn-small">Custom Friday Bingo Player</a>
-        <a href="https://mccutcheon.myportfolio.com" class="glass-panel btn-small">Photography Page & Booking Site</a>
-        <a href="https://www.consistency.ink/windows-xp/notary" class="glass-panel btn-small">Mobile Notary Site</a>
-    </div>
-
-    <!-- Bottom Left Theme Menu -->
-    <div class="bottom-left-nav" id="theme-nav">
-        <button class="glass-panel theme-btn" id="theme-toggle" title="Select Theme">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        </button>
-        <div class="theme-menu">
-            <button class="theme-option active" data-theme="">Black Metallic (Default)</button>
-            <button class="theme-option" data-theme="theme-blue">Blue Metallic</button>
-            <button class="theme-option" data-theme="theme-red">Red Metallic</button>
-            <button class="theme-option" data-theme="theme-yellow">Gold Metallic</button>
-            <button class="theme-option" data-theme="theme-pink">Pink Metallic</button>
-            <button class="theme-option" data-theme="theme-purple">Purple Metallic</button>
-            <button class="theme-option" data-theme="theme-green">Green Metallic</button>
-            <div class="menu-divider"></div>
-            <button class="theme-option" data-theme="theme-aquatic">Aquatic Gradient</button>
-            <button class="theme-option" data-theme="theme-underwater">Underwater Pool</button>
-            <button class="theme-option" data-theme="theme-greenhouse">Greenhouse at Night</button>
-            <button class="theme-option" data-theme="theme-paperplanes">Paper Airplanes</button>
+          </a>
         </div>
+      </div>
+    </main>
+
+    <footer>
+      <span>© 2026 Conor McCutcheon</span>
+      <button class="nav-contact" onclick="show('contact')" style="font-size:0.75rem;">conormcc.edits@gmail.com</button>
+    </footer>
+  </div>
+
+  <!-- CONTACT PAGE -->
+  <div class="page" id="page-contact">
+    <nav>
+      <button class="nav-logo" onclick="show('home')">
+        <span class="logo-default">Conor McCutcheon</span>
+        <span class="logo-home">← Home</span>
+      </button>
+      <button class="nav-contact" onclick="show('home')">← Back</button>
+    </nav>
+
+    <div class="contact-main">
+      <h1 class="contact-headline">Get in touch.</h1>
+
+      <div class="contact-links">
+        <a href="tel:+19144322249" class="contact-row contact-row-1">
+          <span class="contact-label">Phone</span>
+          <span class="contact-value">(914) 432-2249</span>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a href="mailto:conormcc.edits@gmail.com" class="contact-row contact-row-2">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">conormcc.edits@gmail.com</span>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a href="https://youtube.com/@Consistencyy" target="_blank" rel="noopener" class="contact-row contact-row-3">
+          <span class="contact-label">YouTube</span>
+          <span class="contact-value">@Consistencyy</span>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a href="https://github.com/conorcrownawardproofs-star" target="_blank" rel="noopener" class="contact-row contact-row-4">
+          <span class="contact-label">GitHub</span>
+          <span class="contact-value">@conorcrownawardproofs-star</span>
+          <span class="contact-arrow">→</span>
+        </a>
+      </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        
-        <!-- 1. Left Button: Crown Awards -->
-        <a href="https://conorcrownawardproofs-star.github.io/ordertracker/" class="glass-panel btn-square btn-main-bg bg-btn-left">
-            <div class="btn-glow-text"> </div>
-        </a>
+    <footer>
+      <span>© 2026 Conor McCutcheon</span>
+    </footer>
+  </div>
 
-        <!-- 2 & 3. Center Split Button: Portfolios -->
-        <div class="btn-center-container">
-            <a href="https://consistency.ink" class="center-half center-half-main btn-main-bg bg-btn-center-top">
-                <span class="btn-glow-text">Design Portfolio HUB</span>
-            </a>
-            
-            <div class="center-divider-badge">OR</div>
-            
-            <a href="https://consistency.ink/windows-xp/" class="center-half btn-main-bg bg-btn-center-bottom">
-                <span class="btn-glow-text">View my Work</span>
-            </a>
-        </div>
+  <script>
+    function show(page) {
+      const current = document.querySelector('.page.active');
+      const next = document.getElementById('page-' + page);
+      if (current === next) return;
+      current.classList.remove('active');
+      next.classList.add('active');
+      window.scrollTo(0, 0);
+    }
 
-        <!-- 4. Right Button: Budgeter -->
-        <a href="https://conorcrownawardproofs-star.github.io/budgeter/" class="glass-panel btn-square btn-main-bg bg-btn-right">
-            <div class="btn-glow-text">Custom Private<br>Budgeter</div>
-        </a>
+    setTimeout(() => {
+      const loader = document.getElementById('loader');
+      loader.classList.add('hidden');
+      setTimeout(() => loader.remove(), 600);
+    }, 1800);
+  </script>
 
-    </div>
-
-    <script>
-        // Theme Menu Logic
-        const themeNav = document.getElementById('theme-nav');
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeOptions = document.querySelectorAll('.theme-option');
-        
-        let currentTheme = '';
-
-        themeToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            themeNav.classList.toggle('active');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!themeNav.contains(e.target)) {
-                themeNav.classList.remove('active');
-            }
-        });
-
-        themeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const newTheme = option.getAttribute('data-theme');
-                if (currentTheme) document.body.classList.remove(currentTheme);
-                if (newTheme) document.body.classList.add(newTheme);
-                currentTheme = newTheme;
-                themeOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                themeNav.classList.remove('active');
-            });
-        });
-    </script>
 </body>
 </html>
